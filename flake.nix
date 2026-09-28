@@ -18,7 +18,7 @@
       ...
     }:
     {
-      homeManagerModules.default = ./modules/home;
+      homeManagerModules.user = ./modules/home;
 
       homeConfigurations.user = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
