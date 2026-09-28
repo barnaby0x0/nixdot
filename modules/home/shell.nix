@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, lib, ... }:
 
 {
   programs.bash = {
@@ -10,11 +10,7 @@
       update = "nix flake update ~/nixos-gaming";
     };
   };
-}
 
-{ pkgs, lib, ... }:
-
-{
   programs.zsh = {
     enable = true;
 
