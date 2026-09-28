@@ -19,6 +19,7 @@
     }:
     {
       homeManagerModules.user = ./home/user.nix;
+      homeManagerModules.arch = ./home/arch.nix;
 
       homeConfigurations.user = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
@@ -27,5 +28,14 @@
           ./home/user.nix
         ];
       };
+
+      homeConfigurations.arch = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+
+        modules = [
+          ./home/arch.nix
+        ];
+      };
+
     };
 }
