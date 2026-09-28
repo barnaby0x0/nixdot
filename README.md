@@ -24,28 +24,22 @@ nixdot/
     ├── user.nix
     ├── arch.nix
     ├── user/
-    │   └── ...
+    │   ├── default.nix
+    │   └── programs/
+    │       ├── common.nix
+    │       ├── git.nix
+    │       ├── shell.nix
+    │       ├── terminator.nix
+    │       └── vim.nix
     └── arch/
-        └── ...
+        └── default.nix
 ```
 
 The `home/` directory contains the different user profiles.
 
-For example:
-
-```text
-home/
-├── user.nix
-├── arch.nix
-├── user/
-│   ├── ...
-│   └── ...
-└── arch/
-    ├── ...
-    └── ...
-```
-
 The files `user.nix` and `arch.nix` are the entry points for their respective Home Manager profiles.
+
+Profiles can import reusable configurations from `home/modules/` or other shared locations.
 
 ## Flake outputs
 
@@ -93,6 +87,30 @@ After the first installation, the regular `home-manager` command can also be use
 
 ```bash
 home-manager switch --flake github:barnaby0x0/nixdot#arch
+```
+
+## Rolling back a configuration
+
+Home Manager creates a new generation each time a configuration is activated.
+
+List available generations:
+
+```bash
+home-manager generations
+```
+
+To return to the previous generation:
+
+```bash
+home-manager switch --rollback
+```
+
+This is useful when testing a new configuration and you want to quickly restore the previous working state.
+
+Unused generations can be removed with:
+
+```bash
+home-manager remove-generations <generation>
 ```
 
 ## Using a specific revision
@@ -160,6 +178,67 @@ For example, in a NixOS configuration using Home Manager:
 
 The `user` profile can therefore be shared between a standalone Home Manager installation and a NixOS system.
 
+## Reusable configuration modules
+
+Configurations that are useful across multiple profiles can be kept separately from the profiles themselves.
+
+For example:
+
+```text
+home/
+├── modules/
+│   └── programs/
+│       ├── git.nix
+│       ├── shell.nix
+│       └── vim.nix
+│
+├── arch/
+│   └── default.nix
+│
+└── user/
+    └── default.nix
+```
+
+A reusable configuration can receive parameters from the profile.
+
+For example, `git.nix`:
+
+```nix
+{ config, ... }:
+
+{
+  programs.git = {
+    enable = true;
+
+    settings = {
+      user = {
+        name = config.my.user.git.name;
+        email = config.my.user.git.email;
+      };
+
+      status.showUntrackedFiles = "yes";
+    };
+  };
+}
+```
+
+The profile can then provide its specific values:
+
+```nix
+{
+  my.user.git = {
+    name = "Victor";
+    email = "victor@mail.com";
+  };
+
+  imports = [
+    ../modules/programs/git.nix
+  ];
+}
+```
+
+This keeps reusable configuration independent from a specific profile while allowing each profile to provide its own values.
+
 ## Development
 
 Clone the repository:
@@ -204,6 +283,18 @@ nix run github:nix-community/home-manager -- \
 
 This allows changes to be tested before pushing them to GitHub.
 
+You can inspect the resulting Home Manager generations with:
+
+```bash
+home-manager generations
+```
+
+If the configuration causes a problem, return to the previous generation with:
+
+```bash
+home-manager switch --rollback
+```
+
 ## Adding a new profile
 
 Create a new entry point under `home/`:
@@ -241,6 +332,8 @@ home-manager switch --flake .#new-profile
 This repository intentionally focuses on **user-specific configuration** rather than providing a generic collection of Home Manager modules.
 
 Machine-specific system configuration belongs in the corresponding system flake, while user configuration belongs here.
+
+Reusable configurations such as Git, Vim, shell, and other user programs can be shared between profiles while keeping profile-specific values separate.
 
 This separation makes it possible to:
 
