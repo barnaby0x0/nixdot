@@ -20,11 +20,11 @@
     {
       homeManagerModules.default = ./modules/home;
 
-      homeConfigurations.arch = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations.user = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
 
         modules = [
-          ./home/arch.nix
+          ./home/user.nix
         ];
       };
     };

@@ -7,6 +7,6 @@
   home.stateVersion = "26.05";
 
   imports = [
-    ../modules/home
+    ./user
   ];
 }
