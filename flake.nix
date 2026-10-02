@@ -18,6 +18,7 @@
       ...
     }:
     {
+      # Useful when you use this flake as a dependencie
       homeManagerModules.user = ./home/user.nix;
       homeManagerModules.arch = ./home/arch.nix;
 
