@@ -26,6 +26,7 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
 
         modules = [
+          {nixpkgs.config.allowUnfree = true;}
           ./home/user.nix
         ];
       };
@@ -34,6 +35,7 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
 
         modules = [
+          {nixpkgs.config.allowUnfree = true;}
           ./home/arch.nix
         ];
       };
