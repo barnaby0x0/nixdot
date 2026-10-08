@@ -43,7 +43,7 @@
   home.file.".tmux/plugins/tpm".source = pkgs.fetchFromGitHub {
     owner = "tmux-plugins";
     repo = "tpm";
-    rev = "master";
-    sha256 = "lib.getHash..."; # voir note ci-dessous
+    rev = "e261deb1b47614eed3400089ce7197dc68acc4eb";
+    sha256 = "sha256-oRKUZNyJYQXlkeQfbEYiltUEBpvdwn2SoEBWHVUNmrA=";
   };
 }
