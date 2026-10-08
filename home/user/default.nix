@@ -14,5 +14,6 @@
     ../modules/programs/git.nix
     ../modules/programs/vim.nix
     ./programs/terminator.nix
+    ./programs/tmux.nix
   ];
 }
