@@ -41,29 +41,45 @@
       homeManagerModules.user = ./home/user.nix;
       homeManagerModules.arch = ./home/arch.nix;
 
-      homeConfigurations.user = forEachSystem (
-        { pkgs }:
-        home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
+      homeConfigurations = {
+        "dev-x86_64-linux" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
           modules = [
-            { nixpkgs.config.allowUnfree = true; }
             ./home/user.nix
           ];
+        };
 
-        }
-      );
-
-      homeConfigurations.arch = forEachSystem (
-        { pkgs }:
-        home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-
+        "dev-aarch64-linux" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.aarch64-linux;
           modules = [
-            { nixpkgs.config.allowUnfree = true; }
-            ./home/arch.nix
+            ./home/user.nix
           ];
-        }
-      );
+        };
+      };
+
+      # homeConfigurations.user = forEachSystem (
+      #   { pkgs }:
+      #   home-manager.lib.homeManagerConfiguration {
+      #     inherit pkgs;
+      #     modules = [
+      #       { nixpkgs.config.allowUnfree = true; }
+      #       ./home/user.nix
+      #     ];
+
+      #   }
+      # );
+
+      # homeConfigurations.arch = forEachSystem (
+      #   { pkgs }:
+      #   home-manager.lib.homeManagerConfiguration {
+      #     inherit pkgs;
+
+      #     modules = [
+      #       { nixpkgs.config.allowUnfree = true; }
+      #       ./home/arch.nix
+      #     ];
+      #   }
+      # );
 
       homeModules.shell = ./home/user/programs/shell.nix;
       homeModules.git = ./home/modules/programs/git.nix;
