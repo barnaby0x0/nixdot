@@ -40,7 +40,7 @@
         ];
       };
       
-      homeModules.shell = ./home/user/programs/shell.nix
+      homeModules.shell = ./home/user/programs/shell.nix;
 
     };
 }
