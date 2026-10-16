@@ -41,6 +41,7 @@
       };
       
       homeModules.shell = ./home/user/programs/shell.nix;
+      homeModules.git = ./home/modules/programs/git.nix
 
     };
 }
