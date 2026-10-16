@@ -17,31 +17,57 @@
       home-manager,
       ...
     }:
+    let
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+
+      forEachSystem =
+        f:
+        nixpkgs.lib.genAttrs supportedSystems (
+          system:
+          f rec {
+            inherit system;
+            pkgs = nixpkgs.legacyPackages.${system};
+          }
+        );
+    in
     {
+
       # Useful when you use this flake as a dependencie
       homeManagerModules.user = ./home/user.nix;
       homeManagerModules.arch = ./home/arch.nix;
 
-      homeConfigurations.user = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      homeConfigurations.user = forEachSystem (
+        { pkgs }:
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [
+            { nixpkgs.config.allowUnfree = true; }
+            ./home/user.nix
+          ];
 
-        modules = [
-          {nixpkgs.config.allowUnfree = true;}
-          ./home/user.nix
-        ];
-      };
+        }
+      );
 
-      homeConfigurations.arch = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      homeConfigurations.arch = forEachSystem (
+        system:
+        { pkgs }:
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
 
-        modules = [
-          {nixpkgs.config.allowUnfree = true;}
-          ./home/arch.nix
-        ];
-      };
-      
+          modules = [
+            { nixpkgs.config.allowUnfree = true; }
+            ./home/arch.nix
+          ];
+        }
+      );
+
       homeModules.shell = ./home/user/programs/shell.nix;
-      homeModules.git = ./home/modules/programs/git.nix
-
+      homeModules.git = ./home/modules/programs/git.nix;
+      formatter = forEachSystem ({ pkgs, ... }: pkgs.nixfmt);
     };
 }
