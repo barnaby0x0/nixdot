@@ -46,7 +46,11 @@
           let
             pkgs = import nixpkgs {
               system = "x86_64-linux";
-              config.allowUnfreePredicate = pkg: nixpkgs.lib.getName pkg == "vimplugin-vim-yaml";
+              config.allowUnfreePredicate =
+                pkg:
+                builtins.elem (nixpkgs.lib.getName pkg) [
+                  "vim-yaml"
+                ];
             };
           in
           home-manager.lib.homeManagerConfiguration {
@@ -60,7 +64,11 @@
           let
             pkgs = import nixpkgs {
               system = "aarch64-linux";
-              config.allowUnfreePredicate = pkg: nixpkgs.lib.getName pkg == "vimplugin-vim-yaml";
+              config.allowUnfreePredicate =
+                pkg:
+                builtins.elem (nixpkgs.lib.getName pkg) [
+                  "vim-yaml"
+                ];
             };
           in
           home-manager.lib.homeManagerConfiguration {
