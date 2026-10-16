@@ -79,30 +79,6 @@
           };
       };
 
-      # homeConfigurations.user = forEachSystem (
-      #   { pkgs }:
-      #   home-manager.lib.homeManagerConfiguration {
-      #     inherit pkgs;
-      #     modules = [
-      #       { nixpkgs.config.allowUnfree = true; }
-      #       ./home/user.nix
-      #     ];
-
-      #   }
-      # );
-
-      # homeConfigurations.arch = forEachSystem (
-      #   { pkgs }:
-      #   home-manager.lib.homeManagerConfiguration {
-      #     inherit pkgs;
-
-      #     modules = [
-      #       { nixpkgs.config.allowUnfree = true; }
-      #       ./home/arch.nix
-      #     ];
-      #   }
-      # );
-
       homeModules.shell = ./home/user/programs/shell.nix;
       homeModules.git = ./home/modules/programs/git.nix;
       formatter = forEachSystem ({ pkgs, ... }: pkgs.nixfmt);
