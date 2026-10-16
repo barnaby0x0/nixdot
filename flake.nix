@@ -54,7 +54,6 @@
       );
 
       homeConfigurations.arch = forEachSystem (
-        system:
         { pkgs }:
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
