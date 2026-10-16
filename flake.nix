@@ -39,6 +39,8 @@
           ./home/arch.nix
         ];
       };
+      
+      homeModules.shell = ./home/user/programs/shell.nix
 
     };
 }
