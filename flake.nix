@@ -45,6 +45,7 @@
         "dev-x86_64-linux" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           modules = [
+            { nixpkgs.config.allowUnfreePredicate = pkg: nixpkgs.lib.getName pkg == "vimplugin-vim-yaml"; }
             ./home/user.nix
           ];
         };
@@ -52,6 +53,7 @@
         "dev-aarch64-linux" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.aarch64-linux;
           modules = [
+            { nixpkgs.config.allowUnfreePredicate = pkg: nixpkgs.lib.getName pkg == "vimplugin-vim-yaml"; }
             ./home/user.nix
           ];
         };
