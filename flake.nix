@@ -57,21 +57,37 @@
         system:
         let
           pkgs = import nixpkgs { inherit system; };
+          home = mkHomeConfiguration system;
         in
         {
           dev = pkgs.writeShellApplication {
             name = "nixdot-dev";
-            runtimeInputs = [ pkgs.nix ];
-
             text = ''
-              exec nix run github:nix-community/home-manager -- \
-                switch \
-                --flake "github:barnaby0x0/nixdot#${system}" \
-                "$@"
+              exec ${home.activationPackage}/activate
             '';
           };
         }
       );
+
+      # packages = forAllSystems (
+      #   system:
+      #   let
+      #     pkgs = import nixpkgs { inherit system; };
+      #   in
+      #   {
+      #     dev = pkgs.writeShellApplication {
+      #       name = "nixdot-dev";
+      #       runtimeInputs = [ pkgs.nix ];
+
+      #       text = ''
+      #         exec nix run github:nix-community/home-manager -- \
+      #           switch \
+      #           --flake "github:barnaby0x0/nixdot#${system}" \
+      #           "$@"
+      #       '';
+      #     };
+      #   }
+      # );
 
       homeConfigurations = forAllSystems (system: mkHomeConfiguration system);
       formatter = forAllSystems (
