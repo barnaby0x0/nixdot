@@ -13,7 +13,6 @@
       url = "github:Victor733909/flakes?dir=vim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
   };
 
   outputs =
@@ -32,26 +31,11 @@
         "aarch64-darwin"
       ];
 
-      forEachSystem =
-        f:
-        nixpkgs.lib.genAttrs supportedSystems (
-          system:
-          f rec {
-            inherit system;
-            pkgs = nixpkgs.legacyPackages.${system};
-          }
-        );
-    in
-    {
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
 
-      # Useful when you use this flake as a dependencie
-      homeManagerModules.user = ./home/user.nix;
-      homeManagerModules.arch = ./home/arch.nix;
-
-      homeConfigurations.dev =
+      mkHomeConfiguration =
+        system:
         let
-          system = builtins.currentSystem;
-
           pkgs = import nixpkgs {
             inherit system;
 
@@ -73,62 +57,25 @@
             ./home/user.nix
           ];
         };
+    in
+    {
+      # Reusable Home Manager modules
+      homeManagerModules = {
+        user = ./home/user.nix;
+        arch = ./home/arch.nix;
+        shell = ./home/modules/programs/shell.nix;
+        git = ./home/modules/programs/git.nix;
+        vim = ./home/modules/programs/vim.nix;
+      };
 
-      # homeConfigurations = {
-
-      #   dev = home-manager.lib.homeManagerConfiguration {
-      #     extraSpecialArgs = {
-      #       inherit vim-flake;
-      #     };
-
-      #     modules = [
-      #       ./home/user.nix
-      #     ];
-      #   };
-
-      # "dev-x86_64-linux" =
-      #   let
-      #     pkgs = import nixpkgs {
-      #       system = "x86_64-linux";
-      #       config.allowUnfreePredicate =
-      #         pkg:
-      #         builtins.elem (nixpkgs.lib.getName pkg) [
-      #           "vim-yaml"
-      #         ];
-      #     };
-      #   in
-      #   home-manager.lib.homeManagerConfiguration {
-      #     inherit pkgs;
-
-      #     extraSpecialArgs = {
-      #       inherit vim-flake;
-      #     };
-      #     modules = [
-      #       ./home/user.nix
-      #     ];
-      #   };
-
-      # "dev-aarch64-linux" =
-      #   let
-      #     pkgs = import nixpkgs {
-      #       system = "aarch64-linux";
-      #       config.allowUnfreePredicate =
-      #         pkg:
-      #         builtins.elem (nixpkgs.lib.getName pkg) [
-      #           "vim-yaml"
-      #         ];
-      #     };
-      #   in
-      #   home-manager.lib.homeManagerConfiguration {
-      #     inherit pkgs;
-      #     modules = [
-      #       ./home/user.nix
-      #     ];
-      #   };
-      # };
-
-      homeModules.shell = ./home/modules/programs/shell.nix;
-      homeModules.git = ./home/modules/programs/git.nix;
-      formatter = forEachSystem ({ pkgs, ... }: pkgs.nixfmt);
+      # One configuration per supported system
+      homeConfigurations = forAllSystems (system: mkHomeConfiguration system);
+      formatter = forAllSystems (
+        system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
+        pkgs.nixfmt-rfc-style
+      );
     };
 }
