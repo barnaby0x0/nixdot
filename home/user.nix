@@ -1,4 +1,4 @@
-{ ... }:
+{ vim-flake, ... }:
 
 {
   home.username = "user";

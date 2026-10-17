@@ -8,6 +8,12 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    vim-flake = {
+      url = "github:Victor733909/flakes?dir=vim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =
@@ -15,6 +21,7 @@
       self,
       nixpkgs,
       home-manager,
+      vim-flake,
       ...
     }:
     let
@@ -56,6 +63,7 @@
           home-manager.lib.homeManagerConfiguration {
             inherit pkgs;
             modules = [
+              vim-flake
               ./home/user.nix
             ];
           };
