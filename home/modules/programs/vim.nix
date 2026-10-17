@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, vim-flake, ... }:
 
 {
-home.packages = [
+  home.packages = [
     vim-flake.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
@@ -94,7 +94,6 @@ home.packages = [
 
   #     set termguicolors
 
-
   #     " ==========================================================
   #     " Theme - OneDark
   #     " ==========================================================
@@ -104,7 +103,6 @@ home.packages = [
   #     let g:onedark_terminal_italics = 1
 
   #     colorscheme onedark
-
 
   #     " ==========================================================
   #     " Status line
@@ -117,20 +115,17 @@ home.packages = [
   #     set statusline+=%=
   #     set statusline+=\ row:\ %l\ col:\ %c\ percent:\ %p%%
 
-
   #     " ==========================================================
   #     " Leader
   #     " ==========================================================
 
   #     let mapleader = ','
 
-
   #     " ==========================================================
   #     " GitGutter
   #     " ==========================================================
 
   #     nmap <C-g> :GitGutterEnable<CR>
-
 
   #     " ==========================================================
   #     " Goyo
@@ -141,13 +136,11 @@ home.packages = [
 
   #     nmap <C-f> :Goyo<CR>
 
-
   #     " ==========================================================
   #     " Terminal
   #     " ==========================================================
 
   #     nmap <C-d> :below terminal<CR>
-
 
   #     " ==========================================================
   #     " NERDTree
@@ -176,7 +169,6 @@ home.packages = [
   #     nmap <C-t> :NERDTreeToggle<CR>
   #     nmap <C-n> :NERDTreeFind<CR>
 
-
   #     " ==========================================================
   #     " Devicons
   #     " ==========================================================
@@ -186,7 +178,6 @@ home.packages = [
   #     let g:WebDevIconsUnicodeDecorateFileNodes = 1
   #     let g:webdevicons_conceal_nerdtree_brackets = 1
   #     let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-
 
   #     " ==========================================================
   #     " NERDTree startup
@@ -203,7 +194,6 @@ home.packages = [
   #           \ execute 'cd ' . argv()[0] |
   #           \ endif
 
-
   #     " If another buffer replaces NERDTree,
   #     " restore NERDTree in the other window.
 
@@ -216,7 +206,6 @@ home.packages = [
   #           \ execute 'buffer' . buf |
   #           \ endif
 
-
   #     " Exit Vim if NERDTree is the only remaining window.
 
   #     autocmd BufEnter * if tabpagenr('$') == 1 &&
@@ -226,7 +215,6 @@ home.packages = [
   #           \ quit |
   #           \ endif
 
-
   #     " Close tab if NERDTree is the only remaining window.
 
   #     autocmd BufEnter * if winnr('$') == 1 &&
@@ -235,13 +223,11 @@ home.packages = [
   #           \ quit |
   #           \ endif
 
-
   #     " ==========================================================
   #     " Markdown
   #     " ==========================================================
 
   #     let g:vim_markdown_folding_disabled = 1
-
 
   #     " ==========================================================
   #     " Terraform / HCL
@@ -250,7 +236,6 @@ home.packages = [
   #     let g:hcl_align = 1
   #     let g:terraform_align = 1
   #     let g:terraform_fmt_on_save = 1
-
 
   #     " ==========================================================
   #     " YAML
@@ -266,13 +251,11 @@ home.packages = [
   #           \ foldmethod=indent
   #           \ nofoldenable
 
-
   #     " ==========================================================
   #     " Search
   #     " ==========================================================
 
   #     nnoremap <C-L> :nohlsearch<CR><C-L>
-
 
   #     " ==========================================================
   #     " Macro

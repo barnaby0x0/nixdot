@@ -62,8 +62,11 @@
           in
           home-manager.lib.homeManagerConfiguration {
             inherit pkgs;
+
+            extraSpecialArgs = {
+              inherit vim-flake;
+            };
             modules = [
-              vim-flake
               ./home/user.nix
             ];
           };
