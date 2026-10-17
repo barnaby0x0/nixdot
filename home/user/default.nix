@@ -8,12 +8,12 @@
   };
 
   imports = [
-    ./programs/common.nix
-    ./programs/shell.nix
+    ../modules/programs/common.nix
+    ../modules/programs/shell.nix
     ../modules/options.nix
     ../modules/programs/git.nix
     ../modules/programs/vim.nix
-    ./programs/terminator.nix
-    ./programs/tmux.nix
+    ../modules/programs/terminator.nix
+    ../modules/programs/tmux.nix
   ];
 }

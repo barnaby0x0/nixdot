@@ -79,7 +79,7 @@
           };
       };
 
-      homeModules.shell = ./home/user/programs/shell.nix;
+      homeModules.shell = ./home/modules/programs/shell.nix;
       homeModules.git = ./home/modules/programs/git.nix;
       formatter = forEachSystem ({ pkgs, ... }: pkgs.nixfmt);
     };
