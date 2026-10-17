@@ -49,45 +49,56 @@
       homeManagerModules.arch = ./home/arch.nix;
 
       homeConfigurations = {
-        "dev-x86_64-linux" =
-          let
-            pkgs = import nixpkgs {
-              system = "x86_64-linux";
-              config.allowUnfreePredicate =
-                pkg:
-                builtins.elem (nixpkgs.lib.getName pkg) [
-                  "vim-yaml"
-                ];
-            };
-          in
-          home-manager.lib.homeManagerConfiguration {
-            inherit pkgs;
 
-            extraSpecialArgs = {
-              inherit vim-flake;
-            };
-            modules = [
-              ./home/user.nix
-            ];
+        dev = home-manager.lib.homeManagerConfiguration {
+          extraSpecialArgs = {
+            inherit vim-flake;
           };
 
-        "dev-aarch64-linux" =
-          let
-            pkgs = import nixpkgs {
-              system = "aarch64-linux";
-              config.allowUnfreePredicate =
-                pkg:
-                builtins.elem (nixpkgs.lib.getName pkg) [
-                  "vim-yaml"
-                ];
-            };
-          in
-          home-manager.lib.homeManagerConfiguration {
-            inherit pkgs;
-            modules = [
-              ./home/user.nix
-            ];
-          };
+          modules = [
+            ./home/user.nix
+          ];
+        };
+
+        # "dev-x86_64-linux" =
+        #   let
+        #     pkgs = import nixpkgs {
+        #       system = "x86_64-linux";
+        #       config.allowUnfreePredicate =
+        #         pkg:
+        #         builtins.elem (nixpkgs.lib.getName pkg) [
+        #           "vim-yaml"
+        #         ];
+        #     };
+        #   in
+        #   home-manager.lib.homeManagerConfiguration {
+        #     inherit pkgs;
+
+        #     extraSpecialArgs = {
+        #       inherit vim-flake;
+        #     };
+        #     modules = [
+        #       ./home/user.nix
+        #     ];
+        #   };
+
+        # "dev-aarch64-linux" =
+        #   let
+        #     pkgs = import nixpkgs {
+        #       system = "aarch64-linux";
+        #       config.allowUnfreePredicate =
+        #         pkg:
+        #         builtins.elem (nixpkgs.lib.getName pkg) [
+        #           "vim-yaml"
+        #         ];
+        #     };
+        #   in
+        #   home-manager.lib.homeManagerConfiguration {
+        #     inherit pkgs;
+        #     modules = [
+        #       ./home/user.nix
+        #     ];
+        #   };
       };
 
       homeModules.shell = ./home/modules/programs/shell.nix;
