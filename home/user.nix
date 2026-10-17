@@ -7,6 +7,6 @@
   home.stateVersion = "26.05";
 
   imports = [
-    ./user
+    ./profiles/user
   ];
 }
