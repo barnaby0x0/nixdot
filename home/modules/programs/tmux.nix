@@ -5,12 +5,12 @@
     enable = true;
 
     # --- Options natives Home Manager ---
-    terminal = "screen-256color";      # set -g default-terminal
-    baseIndex = 1;                     # set -g base-index + setw -g pane-base-index
-    historyLimit = 25000;              # set-option -g history-limit
-    mouse = true;                      # set -g mouse on
-    keyMode = "vi";                    # setw -g mode-keys vi
-    escapeTime = 10;                   # set -s escape-time
+    terminal = "screen-256color"; # set -g default-terminal
+    baseIndex = 1; # set -g base-index + setw -g pane-base-index
+    historyLimit = 25000; # set-option -g history-limit
+    mouse = true; # set -g mouse on
+    keyMode = "vi"; # setw -g mode-keys vi
+    escapeTime = 10; # set -s escape-time
 
     # --- Plugins via nixpkgs ---
     plugins = with pkgs.tmuxPlugins; [
