@@ -119,9 +119,62 @@
           nixdot = pkgs.writeShellApplication {
             name = "nixdot";
 
-            runtimeInputs = [ ];
+            runtimeInputs = with pkgs; [
+              nix
+              coreutils
+            ];
 
-            text = builtins.readFile ./bin/nixdot.sh;
+            text = ''
+              set -euo pipefail
+
+              CONFIG=""
+
+              while [[ $# -gt 0 ]]; do
+                case "$1" in
+                  --config)
+                    if [[ $# -lt 2 ]]; then
+                      echo "Erreur : --config nécessite un fichier." >&2
+                      exit 1
+                    fi
+                    CONFIG="$2"
+                    shift 2
+                    ;;
+                  -h|--help)
+                    echo "Usage : nixdot --config <fichier.nix>"
+                    exit 0
+                    ;;
+                  *)
+                    echo "Argument inconnu : $1" >&2
+                    exit 1
+                    ;;
+                esac
+              done
+
+              if [[ -z "$CONFIG" || ! -f "$CONFIG" ]]; then
+                echo "Erreur : fichier de configuration absent ou introuvable." >&2
+                exit 1
+              fi
+
+              CONFIG="$(realpath "$CONFIG")"
+
+              TMPDIR="$(mktemp -d)"
+              trap 'rm -rf "$TMPDIR"' EXIT
+
+              cp "$CONFIG" "$TMPDIR/user-config.nix"
+
+              cat > "$TMPDIR/config.nix" <<'NIX'
+              let
+                userConfig = import ./user-config.nix;
+              in
+              {
+                inherit userConfig;
+              }
+              NIX
+
+              echo "Configuration Nix chargée depuis : $CONFIG"
+
+              nix eval --file "$TMPDIR/config.nix" --json
+            '';
           };
 
           install-victor-laptop = install "victor-laptop";
