@@ -35,15 +35,33 @@
             ];
         };
 
+      # mkHomeConfiguration =
+      #   system:
+      #   let
+      #     pkgs = mkPkgs system;
+      #   in
+      #   home-manager.lib.homeManagerConfiguration {
+      #     inherit pkgs;
+      #     extraSpecialArgs = { inherit vim-flake; };
+      #     modules = [ ./home/user.nix ];
+      #   };
+
       mkHomeConfiguration =
-        system:
+        {
+          system,
+          modules,
+          specialArgs ? { },
+        }:
         let
           pkgs = mkPkgs system;
         in
         home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          extraSpecialArgs = { inherit vim-flake; };
-          modules = [ ./home/user.nix ];
+          inherit pkgs modules;
+
+          extraSpecialArgs = {
+            inherit vim-flake;
+          }
+          // specialArgs;
         };
 
       systems = [
@@ -175,10 +193,22 @@
       );
 
       # homeConfigurations = forAllSystems (system: mkHomeConfiguration system);
+      homeModules.default = import ./home/modules;
+
       homeConfigurations = {
-        "victor-laptop" = mkHomeConfiguration "x86_64-linux";
-        "victor-macbook" = mkHomeConfiguration "aarch64-darwin";
-        "victor-server" = mkHomeConfiguration "aarch64-linux";
+
+        "victor-laptop" = mkHomeConfiguration {
+          system = "x86_64-linux";
+
+          modules = [
+            ./home/user.nix
+            # ./home/modules/default.nix
+            # ./home/profiles/victor-laptop.nix
+          ];
+        };
+        # "victor-laptop" = mkHomeConfiguration "x86_64-linux";
+        # "victor-macbook" = mkHomeConfiguration "aarch64-darwin";
+        # "victor-server" = mkHomeConfiguration "aarch64-linux";
       };
 
       formatter = forAllSystems (
