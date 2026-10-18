@@ -199,7 +199,7 @@
 
         "victor-laptop" = mkHomeConfiguration {
           system = "x86_64-linux";
-
+extraSpecialArgs = { inherit vim-flake; };
           modules = [
             ./home/user.nix
             # ./home/modules/default.nix
