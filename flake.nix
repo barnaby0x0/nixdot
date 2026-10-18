@@ -121,7 +121,6 @@
 
         in
         {
-
           nixdot = pkgs.writeShellApplication {
             name = "nixdot";
             runtimeInputs = [
