@@ -1,5 +1,5 @@
 # home/generic.nix
-{ userConfig, ... }:
+{ userConfig, vim-flake, ... }:
 
 {
   home.username = userConfig.username;
