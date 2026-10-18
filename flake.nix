@@ -74,7 +74,7 @@
 
             text = ''
               exec home-manager switch \
-                --flake "${self}#${system}" \
+                --flake "github:barnaby0x0/nixdot#${system}" \
                 "$@"
             '';
           };
