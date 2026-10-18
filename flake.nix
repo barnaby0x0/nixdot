@@ -51,6 +51,7 @@
           system,
           modules,
           specialArgs ? { },
+          userConfig ? { },
         }:
         let
           pkgs = mkPkgs system;
@@ -58,10 +59,9 @@
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs modules;
 
-          extraSpecialArgs = {
-            # inherit vim-flake;
-          }
-          // specialArgs;
+          extraSpecialArgs = specialArgs // {
+            inherit userConfig;
+          };
         };
 
       systems = [
@@ -206,9 +206,24 @@
             # ./home/profiles/victor-laptop.nix
           ];
         };
-        # "victor-laptop" = mkHomeConfiguration "x86_64-linux";
-        # "victor-macbook" = mkHomeConfiguration "aarch64-darwin";
-        # "victor-server" = mkHomeConfiguration "aarch64-linux";
+
+        "generic" = mkHomeConfiguration {
+          system = "x86_64-linux";
+
+          modules = [
+            ./home/generic.nix
+          ];
+
+          userConfig = {
+            username = "alice";
+            homeDirectory = "/home/alice";
+            git = {
+              name = "Alice";
+              email = "alice@example.com";
+            };
+          };
+        };
+
       };
 
       formatter = forAllSystems (
