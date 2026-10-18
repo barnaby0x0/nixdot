@@ -30,3 +30,9 @@ fi
 echo "Fichier reçu : $CONFIG"
 echo "Contenu du fichier :"
 cat "$CONFIG"
+
+USERNAME=$(nix eval --raw --file "$CONFIG" --apply 'config: config.username')
+HOME_DIRECTORY=$(nix eval --raw --file "$CONFIG" --apply 'config: config.homeDirectory')
+
+echo "Username : $USERNAME"
+echo "Home directory : $HOME_DIRECTORY"
