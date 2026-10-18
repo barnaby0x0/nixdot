@@ -65,13 +65,18 @@
               home-manager.packages.${system}.default
             ];
 
-
-
             text = ''
-              exec home-manager switch \
+              exec nix run github:nix-community/home-manager -- \
+                switch \
                 --flake "github:barnaby0x0/nixdot#${system}" \
                 "$@"
             '';
+
+            # text = ''
+            #   exec home-manager switch \
+            #     --flake "${self}#${system}" \
+            #     "$@"
+            # '';
           };
         }
       );
