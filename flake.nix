@@ -116,6 +116,14 @@
         in
         {
 
+          nixdot = pkgs.writeShellApplication {
+            name = "nixdot";
+
+            runtimeInputs = [ ];
+
+            text = builtins.readFile ./bin/nixdot.sh;
+          };
+
           install-victor-laptop = install "victor-laptop";
           install-victor-macbook = install "victor-macbook";
           install = install null;
@@ -229,20 +237,6 @@
         };
 
       };
-
-      nixdot = forAllSystems (
-        system:
-        let
-          pkgs = mkPkgs system;
-        in
-        pkgs.writeShellApplication {
-          name = "nixdot";
-
-          runtimeInputs = [ ];
-
-          text = builtins.readFile ./bin/nixdot.sh;
-        }
-      );
 
       formatter = forAllSystems (
         system:
