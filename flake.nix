@@ -72,90 +72,77 @@
             '';
           };
 
+          configure = pkgs.writeShellApplication {
+            name = "nixdot-configure";
 
+            runtimeInputs = [
+              pkgs.nix
+              home-manager.packages.${system}.default
+            ];
 
+            text = ''
+              cat <<'EOF'
+              nixdot - Home Manager configuration
+
+              Usage:
+                nix run github:barnaby0x0/nixdot#configure -- --config ./config.nix
+
+              Arguments:
+                --config PATH   Path to the client configuration file (required)
+                -b backup      Back up existing files before activation
+
+              Client configuration example (config.nix):
+                {
+                  git = {
+                    name = "Your Name";
+                    email = "you@example.com";
+                  };
+                }
+
+              The configuration file is evaluated by Nix and must return
+              an attribute set.
+              EOF
+
+              if [ "$#" -eq 0 ]; then
+                exit 0
+              fi
+
+              config=""
+
+              while [ "$#" -gt 0 ]; do
+                case "$1" in
+                  --config)
+                    if [ "$#" -lt 2 ]; then
+                      echo "Error: --config requires a path" >&2
+                      exit 1
+                    fi
+                    config="$2"
+                    shift 2
+                    ;;
+                  *)
+                    echo "Error: unknown argument: $1" >&2
+                    exit 1
+                    ;;
+                esac
+              done
+
+              if [ -z "$config" ]; then
+                echo "Error: --config is required" >&2
+                exit 1
+              fi
+
+              if [ ! -f "$config" ]; then
+                echo "Error: configuration file not found: $config" >&2
+                exit 1
+              fi
+
+              echo "Configuration file found: $config"
+              echo "Next step: pass its evaluated values to Home Manager."
+            '';
+          };
 
         }
       );
-
-configure = pkgs.writeShellApplication {
-  name = "nixdot-configure";
-
-  runtimeInputs = [
-    pkgs.nix
-    home-manager.packages.${system}.default
-  ];
-
-  text = ''
-    cat <<'EOF'
-    nixdot - Home Manager configuration
-
-    Usage:
-      nix run github:barnaby0x0/nixdot#configure -- --config ./config.nix
-
-    Arguments:
-      --config PATH   Path to the client configuration file (required)
-      -b backup      Back up existing files before activation
-
-    Client configuration example (config.nix):
-      {
-        git = {
-          name = "Your Name";
-          email = "you@example.com";
-        };
-      }
-
-    The configuration file is evaluated by Nix and must return
-    an attribute set.
-    EOF
-
-    if [ "$#" -eq 0 ]; then
-      exit 0
-    fi
-
-    config=""
-
-    while [ "$#" -gt 0 ]; do
-      case "$1" in
-        --config)
-          if [ "$#" -lt 2 ]; then
-            echo "Error: --config requires a path" >&2
-            exit 1
-          fi
-          config="$2"
-          shift 2
-          ;;
-        *)
-          echo "Error: unknown argument: $1" >&2
-          exit 1
-          ;;
-      esac
-    done
-
-    if [ -z "$config" ]; then
-      echo "Error: --config is required" >&2
-      exit 1
-    fi
-
-    if [ ! -f "$config" ]; then
-      echo "Error: configuration file not found: $config" >&2
-      exit 1
-    fi
-
-    echo "Configuration file found: $config"
-    echo "Next step: pass its evaluated values to Home Manager."
-  '';
-};
-
-
-
-
-
-
-
-
-
-
 
       homeConfigurations = forAllSystems (system: mkHomeConfiguration system);
       formatter = forAllSystems (
