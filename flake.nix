@@ -24,17 +24,29 @@
       ...
     }:
     let
+      mkPkgs =
+        system:
+        import nixpkgs {
+          inherit system;
+          config.allowUnfreePredicate =
+            pkg:
+            builtins.elem (nixpkgs.lib.getName pkg) [
+              "vim-yaml"
+            ];
+        };
+
       mkHomeConfiguration =
         system:
         let
-          pkgs = import nixpkgs {
-            inherit system;
-            config.allowUnfreePredicate =
-              pkg:
-              builtins.elem (nixpkgs.lib.getName pkg) [
-                "vim-yaml"
-              ];
-          };
+          pkgs = mkPkgs system;
+          # pkgs = import nixpkgs {
+          #   inherit system;
+          #   config.allowUnfreePredicate =
+          #     pkg:
+          #     builtins.elem (nixpkgs.lib.getName pkg) [
+          #       "vim-yaml"
+          #     ];
+          # };
         in
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
@@ -55,7 +67,8 @@
       packages = forAllSystems (
         system:
         let
-          pkgs = import nixpkgs { inherit system; };
+          # pkgs = import nixpkgs { inherit system; };
+          pkgs = mkPkgs system;
         in
         {
           dev = pkgs.writeShellApplication {
@@ -148,7 +161,8 @@
       formatter = forAllSystems (
         system:
         let
-          pkgs = import nixpkgs { inherit system; };
+          # pkgs = import nixpkgs { inherit system; };
+          pkgs = mkPkgs system;
         in
         pkgs.nixfmt
       );
