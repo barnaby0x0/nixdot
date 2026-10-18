@@ -3,6 +3,7 @@
 {
   programs.tmux = {
     enable = true;
+    shell = "${config.home.homeDirectory}/.nix-profile/bin/zsh";
 
     # --- Options natives Home Manager ---
     terminal = "screen-256color"; # set -g default-terminal
