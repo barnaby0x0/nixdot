@@ -39,14 +39,6 @@
         system:
         let
           pkgs = mkPkgs system;
-          # pkgs = import nixpkgs {
-          #   inherit system;
-          #   config.allowUnfreePredicate =
-          #     pkg:
-          #     builtins.elem (nixpkgs.lib.getName pkg) [
-          #       "vim-yaml"
-          #     ];
-          # };
         in
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
@@ -62,28 +54,85 @@
       ];
 
       forAllSystems = nixpkgs.lib.genAttrs systems;
+
     in
     {
       packages = forAllSystems (
         system:
         let
-          # pkgs = import nixpkgs { inherit system; };
           pkgs = mkPkgs system;
-        in
-        {
-          dev = pkgs.writeShellApplication {
-            name = "nixdot-dev";
+
+          install = 
+            configuration:
+            pkgs.writeShellApplication {
+            name = "nixdot-install";
+
             runtimeInputs = [
               pkgs.nix
               home-manager.packages.${system}.default
             ];
 
             text = ''
+              if [ "$#" -lt 1 ]; then
+                echo "Usage: nix run github:barnaby0x0/nixdot#install -- <configuration> [options]"
+                exit 1
+              fi
+
+              # configuration="$1"
+              configuration="${configuration}"
+              shift
+
               exec home-manager switch \
-                --flake "${self}#${system}" \
+                --flake "${self}#$configuration" \
                 "$@"
             '';
           };
+
+          # install =
+          #   name:
+          #   pkgs.writeShellApplication {
+          #     name = "nixdot-install";
+
+          #     runtimeInputs = [
+          #       pkgs.nix
+          #       home-manager.packages.${system}.default
+          #     ];
+
+          #     text = ''
+          #       exec home-manager switch \
+          #         --flake "${self}#${name}" \
+          #         "$@"
+          #     '';
+          #   };
+        in
+        {
+
+          install-victor-laptop = install "victor-laptop";
+          install-victor-macbook = install "victor-macbook";
+          # install = install "";
+
+          # install = pkgs.writeShellApplication {
+          #   name = "nixdot-install";
+
+          #   runtimeInputs = [
+          #     pkgs.nix
+          #     home-manager.packages.${system}.default
+          #   ];
+
+          #   text = ''
+          #     if [ "$#" -lt 1 ]; then
+          #       echo "Usage: nix run github:barnaby0x0/nixdot#install -- <configuration> [options]"
+          #       exit 1
+          #     fi
+
+          #     configuration="$1"
+          #     shift
+
+          #     exec home-manager switch \
+          #       --flake "${self}#$configuration" \
+          #       "$@"
+          #   '';
+          # };
 
           configure = pkgs.writeShellApplication {
             name = "nixdot-configure";
@@ -157,11 +206,16 @@
         }
       );
 
-      homeConfigurations = forAllSystems (system: mkHomeConfiguration system);
+      # homeConfigurations = forAllSystems (system: mkHomeConfiguration system);
+      homeConfigurations = {
+        "victor-laptop" = mkHomeConfiguration "x86_64-linux";
+        "victor-macbook" = mkHomeConfiguration "aarch64-darwin";
+        "victor-server" = mkHomeConfiguration "aarch64-linux";
+      };
+
       formatter = forAllSystems (
         system:
         let
-          # pkgs = import nixpkgs { inherit system; };
           pkgs = mkPkgs system;
         in
         pkgs.nixfmt
