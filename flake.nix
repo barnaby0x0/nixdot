@@ -165,6 +165,7 @@
       # homeConfigurations = forAllSystems (system: mkHomeConfiguration system);
       homeModules.default = import ./home/modules;
 
+      ## LEGACY
       # homeConfigurations = {
 
       #   "victor-laptop" = mkHomeConfiguration {
