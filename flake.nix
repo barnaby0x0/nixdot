@@ -199,9 +199,9 @@
 
         "victor-laptop" = mkHomeConfiguration {
           system = "x86_64-linux";
-          
+
           specialArgs = { inherit vim-flake; };
-          
+
           modules = [
             ./home/user.nix
             # ./home/modules/default.nix
@@ -229,6 +229,20 @@
         };
 
       };
+
+      nixdot = forAllSystems (
+        system:
+        let
+          pkgs = mkPkgs system;
+        in
+        pkgs.writeShellApplication {
+          name = "nixdot";
+
+          runtimeInputs = [ ];
+
+          text = builtins.readFile ./bin/nixdot.sh;
+        }
+      );
 
       formatter = forAllSystems (
         system:
