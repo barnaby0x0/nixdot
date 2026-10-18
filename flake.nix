@@ -73,10 +73,10 @@
             ];
 
             text = ''
-              if [ "$#" -lt 1 ]; then
-                echo "Usage: nix run github:barnaby0x0/nixdot#install -- <configuration> [options]"
-                exit 1
-              fi
+              # if [ "$#" -lt 1 ]; then
+              #   echo "Usage: nix run github:barnaby0x0/nixdot#install -- <configuration> [options]"
+              #   exit 1
+              # fi
 
               # configuration="$1"
               configuration="${configuration}"
