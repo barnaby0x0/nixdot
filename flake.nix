@@ -71,8 +71,10 @@
                 "$@"
             '';
           };
-        }
-      );
+
+
+
+
 
 
 configure = pkgs.writeShellApplication {
@@ -143,6 +145,16 @@ configure = pkgs.writeShellApplication {
     echo "Next step: pass its evaluated values to Home Manager."
   '';
 };
+
+
+
+
+
+        }
+      );
+
+
+
 
 
       homeConfigurations = forAllSystems (system: mkHomeConfiguration system);
