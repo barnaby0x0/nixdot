@@ -224,6 +224,20 @@
         }) systems
       );
 
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = mkPkgs system;
+        in
+        {
+          default = pkgs.mkShell {
+            packages = [
+              self.packages.${system}.nixdot
+            ];
+          };
+        }
+      );
+
       formatter = forAllSystems (
         system:
         let
