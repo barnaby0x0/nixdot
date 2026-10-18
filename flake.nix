@@ -62,25 +62,6 @@
         let
           pkgs = mkPkgs system;
 
-          # install =
-          #   configuration:
-          #   pkgs.writeShellApplication {
-          #   name = "nixdot-install";
-
-          #   runtimeInputs = [
-          #     pkgs.nix
-          #     home-manager.packages.${system}.default
-          #   ];
-
-          #   text = ''
-          #     configuration="${configuration}"
-
-          #     exec home-manager switch \
-          #       --flake "${self}#$configuration" \
-          #       "$@"
-          #   '';
-          # };
-
           install =
             configuration:
             pkgs.writeShellApplication {
@@ -120,29 +101,6 @@
           install-victor-laptop = install "victor-laptop";
           install-victor-macbook = install "victor-macbook";
           install = install null;
-
-          # install = pkgs.writeShellApplication {
-          #   name = "nixdot-install";
-
-          #   runtimeInputs = [
-          #     pkgs.nix
-          #     home-manager.packages.${system}.default
-          #   ];
-
-          #   text = ''
-          #     if [ "$#" -lt 1 ]; then
-          #       echo "Usage: nix run github:barnaby0x0/nixdot#install -- <configuration> [options]"
-          #       exit 1
-          #     fi
-
-          #     configuration="$1"
-          #     shift
-
-          #     exec home-manager switch \
-          #       --flake "${self}#$configuration" \
-          #       "$@"
-          #   '';
-          # };
 
           configure = pkgs.writeShellApplication {
             name = "nixdot-configure";
@@ -231,5 +189,4 @@
         pkgs.nixfmt
       );
     };
-
 }
