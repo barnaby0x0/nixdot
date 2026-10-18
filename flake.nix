@@ -62,41 +62,58 @@
         let
           pkgs = mkPkgs system;
 
-          install = 
+          # install =
+          #   configuration:
+          #   pkgs.writeShellApplication {
+          #   name = "nixdot-install";
+
+          #   runtimeInputs = [
+          #     pkgs.nix
+          #     home-manager.packages.${system}.default
+          #   ];
+
+          #   text = ''
+          #     configuration="${configuration}"
+
+          #     exec home-manager switch \
+          #       --flake "${self}#$configuration" \
+          #       "$@"
+          #   '';
+          # };
+
+          install =
             configuration:
             pkgs.writeShellApplication {
-            name = "nixdot-install";
+              name = "nixdot-install";
 
-            runtimeInputs = [
-              pkgs.nix
-              home-manager.packages.${system}.default
-            ];
+              runtimeInputs = [
+                pkgs.nix
+                home-manager.packages.${system}.default
+              ];
 
-            text = ''
-              configuration="${configuration}"
+              text =
+                if configuration != null then
+                  ''
+                    exec home-manager switch \
+                      --flake "${self}#${configuration}" \
+                      "$@"
+                  ''
+                else
+                  ''
+                    if [ "$#" -lt 1 ]; then
+                      echo "Usage: nix run .#install -- <configuration> [options]" >&2
+                      exit 1
+                    fi
 
-              exec home-manager switch \
-                --flake "${self}#$configuration" \
-                "$@"
-            '';
-          };
+                    configuration="$1"
+                    shift
 
-          # install =
-          #   name:
-          #   pkgs.writeShellApplication {
-          #     name = "nixdot-install";
+                    exec home-manager switch \
+                      --flake "${self}#$configuration" \
+                      "$@"
+                  '';
+            };
 
-          #     runtimeInputs = [
-          #       pkgs.nix
-          #       home-manager.packages.${system}.default
-          #     ];
-
-          #     text = ''
-          #       exec home-manager switch \
-          #         --flake "${self}#${name}" \
-          #         "$@"
-          #     '';
-          #   };
         in
         {
 
