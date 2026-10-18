@@ -75,7 +75,8 @@
 
 
 
-
+        }
+      );
 
 configure = pkgs.writeShellApplication {
   name = "nixdot-configure";
@@ -150,8 +151,7 @@ configure = pkgs.writeShellApplication {
 
 
 
-        }
-      );
+
 
 
 
