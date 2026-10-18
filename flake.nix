@@ -24,6 +24,37 @@
       ...
     }:
     let
+
+
+
+
+
+
+defaultUserConfig = {
+  username = "user";
+  homeDirectory = "/home/user";
+  git = { name = "User"; email = "user@example.com"; };
+};
+
+# Vide en évaluation pure (nix flake check), rempli quand nixdot lance --impure
+loadUserConfig =
+  let
+    path = builtins.getEnv "NIXDOT_CONFIG";
+  in
+  nixpkgs.lib.recursiveUpdate defaultUserConfig (
+    if path == "" then { } else import (/. + path)
+  );
+
+
+
+
+
+
+
+
+
+
+
       mkPkgs =
         system:
         import nixpkgs {
@@ -34,17 +65,6 @@
               "vim-yaml"
             ];
         };
-
-      # mkHomeConfiguration =
-      #   system:
-      #   let
-      #     pkgs = mkPkgs system;
-      #   in
-      #   home-manager.lib.homeManagerConfiguration {
-      #     inherit pkgs;
-      #     extraSpecialArgs = { inherit vim-flake; };
-      #     modules = [ ./home/user.nix ];
-      #   };
 
       mkHomeConfiguration =
         {
@@ -116,139 +136,112 @@
         in
         {
 
-          nixdot = pkgs.writeShellApplication {
-            name = "nixdot";
+nixdot = pkgs.writeShellApplication {
+  name = "nixdot";
+  runtimeInputs = [
+    pkgs.nix
+    pkgs.coreutils
+    home-manager.packages.${system}.default
+  ];
+  text = ''
+    config=""
+    hm_args=()
 
-            runtimeInputs = with pkgs; [
-              nix
-              coreutils
-            ];
+    while [ $# -gt 0 ]; do
+      case "$1" in
+        --config)
+          [ $# -ge 2 ] || { echo "Erreur : --config nécessite un fichier." >&2; exit 1; }
+          config="$2"; shift 2 ;;
+        -h|--help)
+          echo "Usage : nixdot --config <fichier.nix> [options home-manager, ex: -b backup]"
+          exit 0 ;;
+        *) hm_args+=("$1"); shift ;;
+      esac
+    done
 
-            text = ''
-              set -euo pipefail
+    [ -f "$config" ] || { echo "Erreur : fichier de configuration absent ou introuvable." >&2; exit 1; }
 
-              CONFIG=""
+    NIXDOT_CONFIG="$(realpath "$config")"
+    export NIXDOT_CONFIG
 
-              while [[ $# -gt 0 ]]; do
-                case "$1" in
-                  --config)
-                    if [[ $# -lt 2 ]]; then
-                      echo "Erreur : --config nécessite un fichier." >&2
-                      exit 1
-                    fi
-                    CONFIG="$2"
-                    shift 2
-                    ;;
-                  -h|--help)
-                    echo "Usage : nixdot --config <fichier.nix>"
-                    exit 0
-                    ;;
-                  *)
-                    echo "Argument inconnu : $1" >&2
-                    exit 1
-                    ;;
-                esac
-              done
-
-              if [[ -z "$CONFIG" || ! -f "$CONFIG" ]]; then
-                echo "Erreur : fichier de configuration absent ou introuvable." >&2
-                exit 1
-              fi
-
-              CONFIG="$(realpath "$CONFIG")"
-
-              TMPDIR="$(mktemp -d)"
-              trap 'rm -rf "$TMPDIR"' EXIT
-
-              cp "$CONFIG" "$TMPDIR/user-config.nix"
-
-              cat > "$TMPDIR/config.nix" <<'NIX'
-              let
-                userConfig = import ./user-config.nix;
-              in
-              {
-                inherit userConfig;
-              }
-              NIX
-
-              echo "Configuration Nix chargée depuis : $CONFIG"
-
-              nix eval --file "$TMPDIR/config.nix" --json
-            '';
-          };
+    exec home-manager switch --impure \
+      --flake "${self}#generic-${system}" \
+      "''${hm_args[@]}"
+  '';
+};
 
           install-victor-laptop = install "victor-laptop";
           install-victor-macbook = install "victor-macbook";
           install = install null;
 
-          configure = pkgs.writeShellApplication {
-            name = "nixdot-configure";
+          # configure = pkgs.writeShellApplication {
+          #   name = "nixdot-configure";
 
-            runtimeInputs = [
-              pkgs.nix
-              home-manager.packages.${system}.default
-            ];
+          #   runtimeInputs = [
+          #     pkgs.nix
+          #     home-manager.packages.${system}.default
+          #   ];
 
-            text = ''
-              cat <<'EOF'
-              nixdot - Home Manager configuration
+          #   text = ''
+          #     cat <<'EOF'
+          #     nixdot - Home Manager configuration
 
-              Usage:
-                nix run github:barnaby0x0/nixdot#configure -- --config ./config.nix
+          #     Usage:
+          #       nix run github:barnaby0x0/nixdot#configure -- --config ./config.nix
 
-              Arguments:
-                --config PATH   Path to the client configuration file (required)
-                -b backup      Back up existing files before activation
+          #     Arguments:
+          #       --config PATH   Path to the client configuration file (required)
+          #       -b backup      Back up existing files before activation
 
-              Client configuration example (config.nix):
-                {
-                  git = {
-                    name = "Your Name";
-                    email = "you@example.com";
-                  };
-                }
+          #     Client configuration example (config.nix):
+          #       {
+          #         git = {
+          #           name = "Your Name";
+          #           email = "you@example.com";
+          #         };
+          #       }
 
-              The configuration file is evaluated by Nix and must return
-              an attribute set.
-              EOF
+          #     The configuration file is evaluated by Nix and must return
+          #     an attribute set.
+          #     EOF
 
-              if [ "$#" -eq 0 ]; then
-                exit 0
-              fi
+          #     if [ "$#" -eq 0 ]; then
+          #       exit 0
+          #     fi
 
-              config=""
+          #     config=""
 
-              while [ "$#" -gt 0 ]; do
-                case "$1" in
-                  --config)
-                    if [ "$#" -lt 2 ]; then
-                      echo "Error: --config requires a path" >&2
-                      exit 1
-                    fi
-                    config="$2"
-                    shift 2
-                    ;;
-                  *)
-                    echo "Error: unknown argument: $1" >&2
-                    exit 1
-                    ;;
-                esac
-              done
+          #     while [ "$#" -gt 0 ]; do
+          #       case "$1" in
+          #         --config)
+          #           if [ "$#" -lt 2 ]; then
+          #             echo "Error: --config requires a path" >&2
+          #             exit 1
+          #           fi
+          #           config="$2"
+          #           shift 2
+          #           ;;
+          #         *)
+          #           echo "Error: unknown argument: $1" >&2
+          #           exit 1
+          #           ;;
+          #       esac
+          #     done
 
-              if [ -z "$config" ]; then
-                echo "Error: --config is required" >&2
-                exit 1
-              fi
+          #     if [ -z "$config" ]; then
+          #       echo "Error: --config is required" >&2
+          #       exit 1
+          #     fi
 
-              if [ ! -f "$config" ]; then
-                echo "Error: configuration file not found: $config" >&2
-                exit 1
-              fi
+          #     if [ ! -f "$config" ]; then
+          #       echo "Error: configuration file not found: $config" >&2
+          #       exit 1
+          #     fi
 
-              echo "Configuration file found: $config"
-              echo "Next step: pass its evaluated values to Home Manager."
-            '';
-          };
+          #     echo "Configuration file found: $config"
+          #     echo "Next step: pass its evaluated values to Home Manager."
+          #   '';
+          # };
 
         }
       );
@@ -256,9 +249,48 @@
       # homeConfigurations = forAllSystems (system: mkHomeConfiguration system);
       homeModules.default = import ./home/modules;
 
-      homeConfigurations = {
+      # homeConfigurations = {
 
-        "victor-laptop" = mkHomeConfiguration {
+      #   "victor-laptop" = mkHomeConfiguration {
+      #     system = "x86_64-linux";
+
+      #     specialArgs = { inherit vim-flake; };
+
+      #     modules = [
+      #       ./home/user.nix
+      #       # ./home/modules/default.nix
+      #       # ./home/profiles/victor-laptop.nix
+      #     ];
+      #   };
+
+      #   "generic" = mkHomeConfiguration {
+      #     system = "x86_64-linux";
+
+      #     specialArgs = { inherit vim-flake; };
+
+      #     modules = [
+      #       ./home/generic.nix
+      #     ];
+
+      #     userConfig = {
+      #       username = "alice";
+      #       homeDirectory = "/home/alice";
+      #       git = {
+      #         name = "Alice";
+      #         email = "alice@example.com";
+      #       };
+      #     };
+      #   };
+
+      # };
+
+
+
+
+
+homeConfigurations =
+  {
+            "victor-laptop" = mkHomeConfiguration {
           system = "x86_64-linux";
 
           specialArgs = { inherit vim-flake; };
@@ -269,27 +301,30 @@
             # ./home/profiles/victor-laptop.nix
           ];
         };
-
-        "generic" = mkHomeConfiguration {
-          system = "x86_64-linux";
-
-          specialArgs = { inherit vim-flake; };
-
-          modules = [
-            ./home/generic.nix
-          ];
-
-          userConfig = {
-            username = "alice";
-            homeDirectory = "/home/alice";
-            git = {
-              name = "Alice";
-              email = "alice@example.com";
-            };
-          };
-        };
-
+  }
+  // builtins.listToAttrs (
+    map (system: {
+      name = "generic-${system}";
+      value = mkHomeConfiguration {
+        inherit system;
+        specialArgs = { inherit vim-flake; };
+        modules = [ ./home/generic.nix ];
+        userConfig = loadUserConfig;
       };
+    }) systems
+  );
+
+
+
+
+
+
+
+
+
+
+
+
 
       formatter = forAllSystems (
         system:
