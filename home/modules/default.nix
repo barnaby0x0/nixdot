@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ./options.nix
+    ./options
 
     ./programs/common.nix
     ./programs/git.nix
