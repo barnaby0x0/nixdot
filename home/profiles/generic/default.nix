@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../modules/options.nix
+    ../../modules/options
     ../../modules/programs/common.nix
     ../../modules/programs/shell.nix
     ../../modules/programs/git.nix
