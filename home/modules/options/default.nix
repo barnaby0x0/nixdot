@@ -2,5 +2,5 @@
 {
   imports = [
     ./opt-git.nix
-  ]
+  ];
 }
